@@ -9,11 +9,13 @@ import java.io.FileReader;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -22,11 +24,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -189,10 +192,69 @@ public class UIActionsImp implements UIActions {
 	public ExtentTest ExtentTest(ExtentReports report,String testName) {
 		try {
 			return report.startTest(testName);
-		}catch(Exception ex) {
-			System.out.println(ex.getMessage());
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
 		}
 		return null;
+	}
+
+	
+	public void selectList(WebDriver driver, String locator,String value) {
+		try {
+			Select sel =new Select(getLocator(driver, locator));
+			sel.selectByVisibleText(value);
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public String windowSwitch(WebDriver driver) {
+		try {
+			String parentwindow = driver.getWindowHandle();
+			for(String w: driver.getWindowHandles()) {
+				driver.switchTo().window(w);
+			}
+			return parentwindow;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@Override
+	public void scrolltoElement(WebDriver driver, String locator) {
+		try {
+			ele =getLocator(driver, locator);
+			((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView(true);", ele);
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public List<WebElement> getLocator_List(WebDriver driver, String locator) {
+		By temp = null;
+		try {
+			String[] locatorType = locator.split(Constants.DELIMITER);
+			switch (locatorType[1].toLowerCase()) {
+			case Constants.ID:
+				temp = By.id(locatorType[2]);
+				break;
+			case Constants.XPATH:
+				temp = By.xpath(locatorType[2]);
+				break;
+			case Constants.CSSSELECTOR:
+				temp = By.cssSelector(locatorType[2]);
+				break;
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.toString());
+		}
+		return driver.findElements(temp);
 	}
 
 }

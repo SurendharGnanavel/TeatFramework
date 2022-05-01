@@ -3,21 +3,27 @@
  */
 package amazonTest;
 
+import static org.testng.Assert.assertEquals;
+
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.mongodb.diagnostics.logging.Logger;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
+import OR.HomePage;
+import OR.ProductLandingPage;
 import commonActions.Constants;
 import commonActions.UIActions;
 import commonActions.UIActionsImp;
@@ -45,7 +51,8 @@ public class MyTest {
 			test = uiActions.ExtentTest(report, "AmazonTest");
 			driver = uiActions.driverInitilization(driver,prop.getProperty("Browser"));
 			driver.get(prop.getProperty("ApplicationURL"));
-			test.log(LogStatus.INFO, "Driver launched and Navigated to "+prop.getProperty("ApplicationURL"));
+			test.log(LogStatus.PASS, "Driver launched and Navigated to "+prop.getProperty("ApplicationURL"));
+			test.log(LogStatus.PASS, test.addScreenCapture(uiActions.Screenshot(driver, resultFolder)));
 		} catch (Exception e) {
 			System.out.println(e.getCause());
 			System.out.println(e.toString());
@@ -53,9 +60,42 @@ public class MyTest {
 	}
 	
 	@Test
-	public void HomepageActions() {
+	public void Homepage_NavigationActions() {
 		try {
-		//	uiActions.click(driver, locator);
+		uiActions.click(driver, HomePage.lbl_all);
+		test.log(LogStatus.INFO, "Clicked ALL link in Homepage");
+		uiActions.wait(driver,HomePage.lnk_tv_electronics, Constants.timeout);
+		uiActions.click(driver, HomePage.lnk_tv_electronics);
+		test.log(LogStatus.INFO, "Clicked TV,Electronics link under shop by department");
+		uiActions.wait(driver,HomePage.lnk_television, Constants.timeout);
+		uiActions.click(driver, HomePage.lnk_television);
+		test.log(LogStatus.INFO, "Clicked Television under TV,Electronics");
+		test.log(LogStatus.PASS, "Clicked on Television");
+		test.log(LogStatus.PASS, test.addScreenCapture(uiActions.Screenshot(driver, resultFolder)));
+		}catch(Exception e) {
+			System.out.println(e.getCause());
+			System.out.println(e.toString());
+		}
+	}
+	@Test(dependsOnMethods = "Homepage_NavigationActions")
+	public void ProductLandingPage() {
+		try {
+			uiActions.scrolltoElement(driver, ProductLandingPage.txt_samsung);
+			uiActions.wait(driver,ProductLandingPage.txt_samsung, Constants.timeout);
+			uiActions.click(driver, ProductLandingPage.txt_samsung);
+			test.log(LogStatus.PASS, "Clicked on Samsung Checkbox");
+			test.log(LogStatus.PASS, test.addScreenCapture(uiActions.Screenshot(driver, resultFolder)));
+			uiActions.selectList(driver, ProductLandingPage.lst_sortby, Constants.high2low);
+			uiActions.wait(driver,ProductLandingPage.tbl_searchresult, Constants.timeout);
+			List<WebElement> serchList = uiActions.getLocator_List(driver, ProductLandingPage.tbl_searchresult);
+			serchList.get(1).click();
+			String parentWindow = uiActions.windowSwitch(driver);
+			test.log(LogStatus.PASS, "Clicked on Second largest samsung television");
+			test.log(LogStatus.PASS, test.addScreenCapture(uiActions.Screenshot(driver, resultFolder)));
+			uiActions.scrolltoElement(driver, ProductLandingPage.lbl_abouthisItem);
+			assertEquals(uiActions.getLocator(driver, ProductLandingPage.lbl_abouthisItem).getText().trim(), "About this item");
+			driver.close();
+			driver.switchTo().window(parentWindow);
 		}catch(Exception e) {
 			System.out.println(e.getCause());
 			System.out.println(e.toString());
@@ -73,5 +113,10 @@ public class MyTest {
 			test.log(LogStatus.SKIP, "Test Case Skipped is " + result.getName());
 		}
 	}
+	@AfterClass
+	public void teardonw() {
+		driver.quit();
+	}
 
 }
+
