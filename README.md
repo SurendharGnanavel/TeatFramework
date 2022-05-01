@@ -14,8 +14,8 @@ ItestResult is Fail.
 5.	Created a interface for the UIActions reusable method implementation done in UiactionsImp.java
 
 
-Steps to runt eh framework:
-To runt the framework we need to have maven in our system as pre-requisites. Then
+Steps to run the framework:
+To run the framework we need to have maven in our system as pre-requisites. Then
 Open Terminal/cmd run mvn clean install test
 
 		
