@@ -115,6 +115,8 @@ public class MyTest {
 	}
 	@AfterClass
 	public void teardonw() {
+		report.endTest(test);
+		report.flush();
 		driver.quit();
 	}
 

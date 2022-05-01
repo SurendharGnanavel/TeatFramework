@@ -39,7 +39,6 @@ import io.github.bonigarcia.wdm.WebDriverManager;
  */
 public class UIActionsImp implements UIActions {
 
-	public WebElement ele;
 	public ExtentReports report;
 	public ExtentTest test;
 	
@@ -47,15 +46,15 @@ public class UIActionsImp implements UIActions {
 		By temp = null;
 		try {
 			String[] locatorType = locator.split(Constants.DELIMITER);
-			switch (locatorType[1].toLowerCase()) {
+			switch (locatorType[0].toUpperCase()) {
 			case Constants.ID:
-				temp = By.id(locatorType[2]);
+				temp = By.id(locatorType[1]);
 				break;
 			case Constants.XPATH:
-				temp = By.xpath(locatorType[2]);
+				temp = By.xpath(locatorType[1]);
 				break;
 			case Constants.CSSSELECTOR:
-				temp = By.cssSelector(locatorType[2]);
+				temp = By.cssSelector(locatorType[1]);
 				break;
 			}
 		} catch (Exception e) {
@@ -67,8 +66,7 @@ public class UIActionsImp implements UIActions {
 
 	public void click(WebDriver driver,String locator)  {
 		try {	
-			ele = getLocator(driver,locator);
-			ele.click();
+			getLocator(driver,locator).click();
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 			System.out.println(e.toString());
@@ -77,8 +75,7 @@ public class UIActionsImp implements UIActions {
 
 	public void sendKeys(WebDriver driver,String locator, String value) {
 		try {
-			ele = getLocator(driver,locator);
-			ele.sendKeys(value);
+			getLocator(driver,locator).sendKeys(value);
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 			System.out.println(e.toString());
@@ -88,8 +85,7 @@ public class UIActionsImp implements UIActions {
 	public void wait(WebDriver driver,String locator, long timeout) {
 		try {
 			Wait w = new WebDriverWait(driver,timeout);
-			ele = getLocator(driver,locator);
-			w.until(ExpectedConditions.elementToBeClickable(ele));
+			w.until(ExpectedConditions.elementToBeClickable(getLocator(driver,locator)));
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 			System.out.println(e.toString());
@@ -226,8 +222,7 @@ public class UIActionsImp implements UIActions {
 	@Override
 	public void scrolltoElement(WebDriver driver, String locator) {
 		try {
-			ele =getLocator(driver, locator);
-			((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView(true);", ele);
+			((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView(true);", getLocator(driver, locator));
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -239,15 +234,15 @@ public class UIActionsImp implements UIActions {
 		By temp = null;
 		try {
 			String[] locatorType = locator.split(Constants.DELIMITER);
-			switch (locatorType[1].toLowerCase()) {
+			switch (locatorType[0].toUpperCase()) {
 			case Constants.ID:
-				temp = By.id(locatorType[2]);
+				temp = By.id(locatorType[1]);
 				break;
 			case Constants.XPATH:
-				temp = By.xpath(locatorType[2]);
+				temp = By.xpath(locatorType[1]);
 				break;
 			case Constants.CSSSELECTOR:
-				temp = By.cssSelector(locatorType[2]);
+				temp = By.cssSelector(locatorType[1]);
 				break;
 			}
 		} catch (Exception e) {
