@@ -3,6 +3,7 @@
  */
 package commonActions;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -10,6 +11,14 @@ import org.openqa.selenium.WebElement;
  *
  */
 public interface UIActions {
+	
+	
+	/**
+	 * This Method will initialize the webdriver with respect to the String browser
+	 * @param browser - represents a type of Browser
+	 */
+	public WebDriver driverInitilization(String browser) ;
+	
 	
 	/**
 	 * This Method will return the webElement with respect to the locator.
@@ -55,6 +64,12 @@ public interface UIActions {
 	 * @return
 	 */
 	public void propertyLoad(String filePath);
+	
+	/**
+	 * This Method will perform click operation using Action class
+	 * @param locator locator is String parameter and the format for locator is locatorType|Property ("|" is a delimiter)
+	 */
+	public void clickByAction(String locator);
 	
 
 }
