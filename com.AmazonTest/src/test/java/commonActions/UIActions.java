@@ -6,6 +6,9 @@ package commonActions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
+
 /**
  * @author sureng
  *
@@ -17,7 +20,7 @@ public interface UIActions {
 	 * This Method will initialize the webdriver with respect to the String browser
 	 * @param browser - represents a type of Browser
 	 */
-	public WebDriver driverInitilization(String browser) ;
+	public WebDriver driverInitilization(WebDriver driver,String browser) ;
 	
 	
 	/**
@@ -25,14 +28,14 @@ public interface UIActions {
 	 * @param locator - is String parameter and the format for locator is locatorType|Property ("|" is a delimiter)
 	 * @return
 	 */
-	public WebElement getLocator(String locator);
+	public WebElement getLocator(WebDriver driver,String locator);
 	
 	/**
 	 * This Method will do the Web UI click operation with respect to the locator.
 	 * @param locator is String parameter and the format for locator is locatorType|Property ("|" is a delimiter)
 	 * @return
 	 */
-	public void click(String locator);
+	public void click(WebDriver driver,String locator);
 	
 	
 	/**
@@ -41,7 +44,7 @@ public interface UIActions {
 	 * @param value value which needs to be entered into the UI
 	 * @return
 	 */
-	public void sendKeys(String locator,String value);
+	public void sendKeys(WebDriver driver,String locator,String value);
 	
 	/**
 	 * This Method helps to wait the script until the certain conditions satisfies or until the timeout.
@@ -49,14 +52,14 @@ public interface UIActions {
 	 * @param timeout - this is Maximum time up to which script can wait for the element to load
 	 * @return
 	 */
-	public void wait(String locator,long timeout);
+	public void wait(WebDriver driver,String locator,long timeout);
 	
 	/**
 	 * this Method will help us to take the screenshot and save the screen prints to the provided location 
 	 * @param fileName - location to save the screen print 
 	 * @return
 	 */
-	public void Screenshot(String fileName);
+	public String Screenshot(WebDriver driver,String fileName);
 	
 	/**
 	 * THis method will load the property file 
@@ -69,7 +72,28 @@ public interface UIActions {
 	 * This Method will perform click operation using Action class
 	 * @param locator locator is String parameter and the format for locator is locatorType|Property ("|" is a delimiter)
 	 */
-	public void clickByAction(String locator);
+	public void clickByAction(WebDriver driver,String locator);
 	
+	/**
+	 * This method will create a runtime folder for the screenshot and for the extent report 
+	 * @param parentLocation - location of the result folder 
+	 * @return  the current result location to store the screen prints
+	 */
+	public String createResultFolder(String parentLocation);
+	
+	/**
+	 * This method will create Extent report object
+	 * @param ResutlLocation - Extent report location
+	 * @return returns ExtentReports 
+	 */
+	public ExtentReports ExtentReport(String ResutlLocation);
+	
+	/**
+	 * This Method will return the Test of extent report
+	 * @param report- @see public ExtentReports ExtentReport(String ResutlLocation)
+	 * @param testName - String testNanme
+	 * @return
+	 */
+	public ExtentTest ExtentTest(ExtentReports report,String testName);
 
 }

@@ -6,6 +6,9 @@ package commonActions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +25,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.ExtentReports;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 /**
@@ -30,10 +36,11 @@ import io.github.bonigarcia.wdm.WebDriverManager;
  */
 public class UIActionsImp implements UIActions {
 
-	public WebDriver driver;
 	public WebElement ele;
-
-	public WebElement getLocator(String locator) {
+	public ExtentReports report;
+	public ExtentTest test;
+	
+	public WebElement getLocator(WebDriver driver,String locator) {
 		By temp = null;
 		try {
 			String[] locatorType = locator.split(Constants.DELIMITER);
@@ -55,9 +62,9 @@ public class UIActionsImp implements UIActions {
 		return driver.findElement(temp);
 	}
 
-	public void click(String locator)  {
+	public void click(WebDriver driver,String locator)  {
 		try {	
-			ele = getLocator(locator);
+			ele = getLocator(driver,locator);
 			ele.click();
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -65,9 +72,9 @@ public class UIActionsImp implements UIActions {
 		}
 	}
 
-	public void sendKeys(String locator, String value) {
+	public void sendKeys(WebDriver driver,String locator, String value) {
 		try {
-			ele = getLocator(locator);
+			ele = getLocator(driver,locator);
 			ele.sendKeys(value);
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -75,10 +82,10 @@ public class UIActionsImp implements UIActions {
 		}
 	}
 
-	public void wait(String locator, long timeout) {
+	public void wait(WebDriver driver,String locator, long timeout) {
 		try {
 			Wait w = new WebDriverWait(driver,timeout);
-			ele = getLocator(locator);
+			ele = getLocator(driver,locator);
 			w.until(ExpectedConditions.elementToBeClickable(ele));
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -86,15 +93,21 @@ public class UIActionsImp implements UIActions {
 		}
 	}
 
-	public void Screenshot(String fileName) {
+	public String Screenshot(WebDriver driver,String fileName) {
 		try {
 			TakesScreenshot ts = (TakesScreenshot) driver;
 			File src = ts.getScreenshotAs(OutputType.FILE);
-			FileUtils.copyFile(src, new File(fileName));
+			Date date = new Date();
+			Timestamp ts1= new Timestamp(date.getTime());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String fileName1  = fileName+Constants.screenshot+"\\"+sdf.format(ts1).replace("-","_").replace(":", "_").replace(" ", "_");
+			FileUtils.copyFile(src, new File(fileName1));
+			return fileName1;
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 			System.out.println(e.toString());
 		}
+		return null;
 	}
 
 	public void propertyLoad(String filePath) {
@@ -111,7 +124,7 @@ public class UIActionsImp implements UIActions {
 
 	}
 
-	public WebDriver driverInitilization(String browser) {
+	public WebDriver driverInitilization(WebDriver driver,String browser) {
 		try {
 			switch(browser.toUpperCase()) {
 			case Constants.CHROME: 
@@ -137,13 +150,49 @@ public class UIActionsImp implements UIActions {
 		return driver;
 	}
 	
-	public void clickByAction(String locator) {
+	public void clickByAction(WebDriver driver,String locator) {
 		try {
 			Actions a = new Actions(driver);
-			a.moveToElement(getLocator(locator)).build().perform();
+			a.moveToElement(getLocator(driver,locator)).build().perform();
 		}catch(Exception ex) {
 			System.out.println(ex.getMessage());
 		}
+	}
+
+	public String createResultFolder(String parentLocation) {
+		try {
+			Date date = new Date();
+			Timestamp ts= new Timestamp(date.getTime());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String fileName  = Constants.results+"\\Temp_"+sdf.format(ts).replace("-","_").replace(":", "_").replace(" ", "_");
+			String screenshot  = fileName+Constants.screenshot;
+			File  temp = new File(screenshot);
+			if(!temp.exists()) {
+				temp.mkdirs();
+				
+			}
+			return fileName;
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			System.out.println(e.toString());
+		}
+		return null;
+	}
+	public ExtentReports ExtentReport(String ResutlLocation) {
+		try {
+			return new ExtentReports(ResutlLocation+Constants.fileSep+"ExtentReportResults.html");
+		}catch(Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		return null;
+	}
+	public ExtentTest ExtentTest(ExtentReports report,String testName) {
+		try {
+			return report.startTest(testName);
+		}catch(Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		return null;
 	}
 
 }
